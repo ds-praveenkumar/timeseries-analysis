@@ -1,2 +1,2 @@
 # timeseries-analysis
-time series forecasting and prediction
+data analysis related to Time series forecasting and prediction
