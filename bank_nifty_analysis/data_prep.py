@@ -1,8 +1,9 @@
-# main.py
+# data_prep.py
 
 import pandas as pd
 from pathlib import Path
 from sklearn.preprocessing import MinMaxScaler
+import numpy as np
 
 
 class BankNiftyPrediction():
@@ -36,7 +37,7 @@ class BankNiftyPrediction():
         close_ndarray = df[self.target_col].values.reshape((-1,1))
         mn = MinMaxScaler(feature_range=(0, 1))
         self.df["transformed_feature"] = mn.fit_transform(close_ndarray) 
-        print(self.df.transformed_feature[:5])
+        print(self.df.transformed_feature[:1])
         return self.df, mn
         
     
@@ -44,11 +45,15 @@ class BankNiftyPrediction():
 
         features_array = self.df.iloc[:, 7:].values
         target = self.df[self.target_col].values
-        print(features_array[:5])
+        print(features_array[:1])
+        np.save("target.npy", target)
+        np.save("features.npy", features_array)
+        print(f'saved processed data')
         return target, features_array
 
     @classmethod
     def main(cls):
+
         DATA_PATH = Path(Path().cwd()).resolve() / "data"
         features=5
         target_col="Close"
