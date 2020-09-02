@@ -55,7 +55,7 @@ class BankNiftyPrediction():
     def main(cls):
 
         DATA_PATH = Path(Path().cwd()).resolve() / "data"
-        features=5
+        features=2
         target_col="Close"
         bkobj = BankNiftyPrediction(path=DATA_PATH, features=features, target_col=target_col )
         bkobj.generate_features()

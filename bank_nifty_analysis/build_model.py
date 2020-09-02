@@ -8,37 +8,46 @@ import numpy as np
 
 class LSTMModel():
 
-    def __init__(self, lstm_units=int, input_shape=tuple, output_shape=tuple):
+    def __init__(self, lstm_units, 
+                       output_shape):
 
         self.lstm_units = lstm_units
-        self.input_shape = input_shape
         self.output_shape = output_shape
         self.model = tf.keras.Sequential()
+        self.features = None
+        self.target = None
+
+
+    def read_processed_data(self):
+
+        path = Path(Path().cwd()).resolve()
+        files = list(path.glob("*.npy"))
+        features = np.load(str(files[0]))
+        target = np.load(str(files[1]))
+        self.features = features.reshape((features.shape[0], 1, features.shape[1]))
+        self.target = target.reshape((-1,1))
+        self.input_shape = features.shape
+        print(f"data loaded features{self.features.shape} target:{self.target.shape}")
+        return self.features, self.target
 
 
     def build_model(self):
 
-        self.model.add(LSTM(units=self.lstm_units, input_shape=self.input_shape, return_sequences=True))
-        self.model.add(Dropout(0.2))
-        self.model.add(Dense(units=2,activation='softmax'))
-        self.model.compile(optimizer='adam', loss='mse', metrics=["mse"])
+        self.model.add(LSTM(units=self.lstm_units, 
+                            activation="relu",
+                            input_shape=self.input_shape,
+                            return_sequences=True))
+        self.model.add(Dense(units=self.output_shape,activation='softmax'))
+        self.model.compile(optimizer='adam', loss='mse', metrics=['mse', 'mae', 'mape'])
+        self.model.save("Nifty_bank_model.h5")
         print(self.model.summary(), end='\n')
 
     
     def train(self):
 
-        features = None
-        target = None
-        path = Path(Path().cwd()).resolve()
-        files = list(path.glob("*.npy"))
-        features = np.load(str(files[0]))
-        target = np.load(str(files[1]))
-        features = features.reshape((features.shape[0], 1, features.shape[1]))
-        target = target.reshape((-1,1))
-        print(f"data loaded features{features.shape} target:{target.shape}")
-        self.model = self.model.fit(x=features, 
-                                    y=target,
-                                    epochs=30,
+        self.model = self.model.fit(x=self.features, 
+                                    y=self.target,
+                                    epochs=70,
                                     verbose=True,
                                     batch_size=64)
         
@@ -46,7 +55,8 @@ class LSTMModel():
     @classmethod
     def main(cls):
 
-        lstm = LSTMModel(lstm_units=256, input_shape=(250, 6), output_shape=1)
+        lstm = LSTMModel(lstm_units=256, output_shape=1)
+        lstm.read_processed_data()
         lstm.build_model()
         lstm.train()
 
