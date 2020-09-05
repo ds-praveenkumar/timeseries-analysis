@@ -23,9 +23,14 @@ class LSTMModel():
         path = Path(Path().cwd()).resolve()
         files = list(path.glob("*.npy"))
         features = np.load(str(files[0]))
+        train_len = int(len(features) * 0.70)
+        train_set = features[:train_len]
+        test_set = features[train_len:]
         target = np.load(str(files[1]))
-        self.features = features.reshape((features.shape[0], 1, features.shape[1]))
-        self.target = target.reshape((-1,1))
+        target_train = target[:train_len]
+        target_test = target[train_len:]
+        self.features = train_set.reshape((train_set.shape[0], 1, train_set.shape[1]))
+        self.target = target_train.reshape((-1,1))
         self.input_shape = features.shape
         print(f"data loaded features{self.features.shape} target:{self.target.shape}")
         return self.features, self.target
@@ -33,31 +38,32 @@ class LSTMModel():
 
     def build_model(self):
 
-        self.model.add(LSTM(units=self.lstm_units, 
-                            input_shape=self.input_shape,
-                            return_sequences=True))
-        self.model.add(Dropout(0.2))
+        self.model.add(LSTM(self.lstm_units, 
+                            input_shape=(1, 2),
+                            activation="relu",
+                            return_sequences=True
+                            ))
+
 
         self.model.add(LSTM(50, activation='relu', return_sequences=True))
-        self.model.add(Dropout(0.2))
 
         self.model.add(LSTM(50, activation='relu', return_sequences=True))
-        self.model.add(Dropout(0.2))
 
         self.model.add(LSTM(50, activation='relu', return_sequences=True))
-        self.model.add(Dropout(0.2))
 
-        self.model.add(Dense(units=self.output_shape,activation='softmax'))
-        self.model.compile(optimizer='adam', loss='mse', metrics=['mse', 'mae', 'mape'])
+        self.model.add(Dense(10, activation="relu"))
+        self.model.add(Dense(units=self.output_shape ))
+
+        self.model.compile(optimizer='adam', loss='mape', metrics=['mape', 'accuracy'])
         self.model.save("Nifty_bank_model.h5")
         print(self.model.summary(), end='\n')
 
     
-    def train(self):
+    def train(self, epochs):
 
         self.model = self.model.fit(x=self.features, 
                                     y=self.target,
-                                    epochs=70,
+                                    epochs=epochs,
                                     verbose=True,
                                     batch_size=32)
         
@@ -65,10 +71,10 @@ class LSTMModel():
     @classmethod
     def main(cls):
 
-        lstm = LSTMModel(lstm_units=50, output_shape=1)
+        lstm = LSTMModel(lstm_units=256, output_shape=1)
         lstm.read_processed_data()
         lstm.build_model()
-        lstm.train()
+        lstm.train(epochs=70)
 
 
 if __name__ == '__main__':
