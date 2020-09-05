@@ -34,9 +34,19 @@ class LSTMModel():
     def build_model(self):
 
         self.model.add(LSTM(units=self.lstm_units, 
-                            activation="relu",
                             input_shape=self.input_shape,
                             return_sequences=True))
+        self.model.add(Dropout(0.2))
+
+        self.model.add(LSTM(50, activation='relu', return_sequences=True))
+        self.model.add(Dropout(0.2))
+
+        self.model.add(LSTM(50, activation='relu', return_sequences=True))
+        self.model.add(Dropout(0.2))
+
+        self.model.add(LSTM(50, activation='relu', return_sequences=True))
+        self.model.add(Dropout(0.2))
+
         self.model.add(Dense(units=self.output_shape,activation='softmax'))
         self.model.compile(optimizer='adam', loss='mse', metrics=['mse', 'mae', 'mape'])
         self.model.save("Nifty_bank_model.h5")
@@ -49,13 +59,13 @@ class LSTMModel():
                                     y=self.target,
                                     epochs=70,
                                     verbose=True,
-                                    batch_size=64)
+                                    batch_size=32)
         
 
     @classmethod
     def main(cls):
 
-        lstm = LSTMModel(lstm_units=256, output_shape=1)
+        lstm = LSTMModel(lstm_units=50, output_shape=1)
         lstm.read_processed_data()
         lstm.build_model()
         lstm.train()
