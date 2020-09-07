@@ -4,6 +4,7 @@ import pandas as pd
 from pathlib import Path
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
+from joblib import dump
 
 
 class BankNiftyPrediction():
@@ -37,6 +38,8 @@ class BankNiftyPrediction():
         close_ndarray = df[self.target_col].values.reshape((-1,1))
         mn = MinMaxScaler(feature_range=(0, 1))
         self.df["transformed_feature"] = mn.fit_transform(close_ndarray) 
+        dump(mn, "transformer.joblib" )
+        print(" transformer saved" )
         print(self.df.transformed_feature[:1])
         return self.df, mn
         

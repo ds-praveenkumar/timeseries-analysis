@@ -7,7 +7,7 @@ import tensorflow as tf
 from tensorflow.keras.layers import Dense, Dropout, LSTM 
 from tensorflow.keras.callbacks import ModelCheckpoint
 import numpy as np
-
+from joblib import load
 class LSTMModel():
 
     def __init__(self, lstm_units, 
@@ -21,6 +21,7 @@ class LSTMModel():
         self.history = None
         self.x_test = None
         self.y_test = None
+
 
 
     def read_processed_data(self):
@@ -104,9 +105,19 @@ class LSTMModel():
     
     def predict(self):
 
+        print("saving prediction")
         predictions = self.model.predict(self.x_test)
-        self.evaluate(y=predictions, file="train_val.png")
-
+        mn = load("transformer.joblib")
+        predictions = mn.inverse_transform(predictions)
+        print(predictions[0])
+        plot = sns.lineplot(x=self.y_test.shape[0], y=self.y_test )
+        plot = sns.lineplot( y=predictions[0], x=predictions.shape[0])
+        plt.title("Forecast Plot")
+        plt.xlabel("sample")
+        plt.ylabel("price")
+        fig = plot.get_figure()   
+        fig.savefig("prediction.png")
+        plt.show()
         
         
 
@@ -115,10 +126,10 @@ class LSTMModel():
 
         lstm = LSTMModel(lstm_units=256, output_shape=1)
         lstm.read_processed_data()
-        lstm.build_model()
-        history = lstm.train(epochs=30)
-        lstm.evaluate(y=history.history["loss"])
-        #lstm.predict()
+        #lstm.build_model()
+        #history = lstm.train(epochs=30)
+        #lstm.evaluate(y=history.history["loss"])
+        lstm.predict()
 
 
 if __name__ == '__main__':
