@@ -60,7 +60,7 @@ class LSTMModel():
         self.model.add(LSTM(50, activation='relu', return_sequences=True))
 
         self.model.add(Dense(10, activation="relu"))
-        self.model.add(Dense(units=self.output_shape ))
+        self.model.add(Dense(units=self.output_shape, activation="sigmoid" ))
 
         self.model.compile(optimizer='adam', loss='mape', metrics=['mape'])
         self.model.save("Nifty_bank_model.h5")
@@ -94,7 +94,6 @@ class LSTMModel():
         
         print("showing plot")
         plot = sns.lineplot( y=y, x=x)
-        # plot = sns.lineplot( y=self.history.history["val_loss"], x=range(30))
         plt.title(title)
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
@@ -110,6 +109,7 @@ class LSTMModel():
         mn = load("transformer.joblib")
         predictions = mn.inverse_transform(predictions)
         print(predictions[0])
+        pd.DataFrame(predictions).to_csv("predictions.csv", index=False)
         plot = sns.lineplot(x=self.y_test.shape[0], y=self.y_test )
         plot = sns.lineplot( y=predictions[0], x=predictions.shape[0])
         plt.title("Forecast Plot")
@@ -126,9 +126,9 @@ class LSTMModel():
 
         lstm = LSTMModel(lstm_units=256, output_shape=1)
         lstm.read_processed_data()
-        #lstm.build_model()
-        #history = lstm.train(epochs=30)
-        #lstm.evaluate(y=history.history["loss"])
+        # lstm.build_model()
+        # history = lstm.train(epochs=30)
+        # lstm.evaluate(y=history.history["loss"])
         lstm.predict()
 
 
