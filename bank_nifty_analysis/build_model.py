@@ -4,10 +4,13 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd 
 import tensorflow as tf 
+tf.set_random_seed(123)
 from tensorflow.keras.layers import Dense, Dropout, LSTM 
 from tensorflow.keras.callbacks import ModelCheckpoint
 import numpy as np
 from joblib import load
+
+
 class LSTMModel():
 
     def __init__(self, lstm_units, 
@@ -126,9 +129,9 @@ class LSTMModel():
 
         lstm = LSTMModel(lstm_units=256, output_shape=1)
         lstm.read_processed_data()
-        # lstm.build_model()
-        # history = lstm.train(epochs=30)
-        # lstm.evaluate(y=history.history["loss"])
+        lstm.build_model()
+        history = lstm.train(epochs=30)
+        lstm.evaluate(y=history.history["loss"])
         lstm.predict()
 
 
