@@ -6,7 +6,7 @@ import pandas as pd
 import tensorflow as tf 
 
 from tensorflow.keras.layers import Dense, Dropout, LSTM 
-from tensorflow.keras.callbacks import ModelCheckpoint
+from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 import numpy as np
 from joblib import load
 
@@ -77,12 +77,14 @@ class LSTMModel():
                                     save_weights_only=False,
                                     mode='auto')
 
+        tbcb = TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
+
         self.history = self.model.fit(x=self.features, 
                                     y=self.target,
                                     epochs=epochs,
                                     verbose=True,
                                     batch_size=32,
-                                    callbacks=[checkpoint])
+                                    callbacks=[tbcb])
         return self.history
 
     def evaluate(self,
@@ -130,7 +132,7 @@ class LSTMModel():
         lstm = LSTMModel(lstm_units=256, output_shape=1)
         lstm.read_processed_data()
         lstm.build_model()
-        history = lstm.train(epochs=30)
+        history = lstm.train(epochs=70)
         lstm.evaluate(y=history.history["loss"])
         lstm.predict()
 
