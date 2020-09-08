@@ -4,7 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd 
 import tensorflow as tf 
-tf.set_random_seed(123)
+
 from tensorflow.keras.layers import Dense, Dropout, LSTM 
 from tensorflow.keras.callbacks import ModelCheckpoint
 import numpy as np
