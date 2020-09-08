@@ -15,4 +15,8 @@ NOTE:
 - `bank_nifty_forecasting/build_model.py` - load model and prepare prediction
 - `bank_nifty_forecasting/data_prep.py` - transforms data for training model
 
+## Environment Setup
+- `cd timeseries-forecasting`
+- `pip install -r requirements.txt`
+
 
