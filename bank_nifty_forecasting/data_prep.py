@@ -19,7 +19,9 @@ class BankNiftyPrediction():
         FILES = list(self.path.glob("*.csv"))
         print(f'total files found: {len(FILES)}')
         for file in FILES:
-            df_ = pd.read_csv(str(file))
+            df_ = pd.read_csv(str(file), parse_dates=["Date"])
+            df_['Date'] = pd.to_datetime(df_["Date"])
+            df_.sort_values(by="Date", inplace=True)
             self.df =  self.df.append(df_)
 
 
@@ -58,7 +60,7 @@ class BankNiftyPrediction():
     def main(cls):
 
         DATA_PATH = Path(Path().cwd()).resolve() / "data"
-        features=1
+        features=2
         target_col="Close"
         bkobj = BankNiftyPrediction(path=DATA_PATH, features=features, target_col=target_col )
         bkobj.generate_features()
