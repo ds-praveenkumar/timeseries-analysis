@@ -21,8 +21,8 @@ class BankNiftyPrediction():
         for file in FILES:
             df_ = pd.read_csv(str(file), parse_dates=["Date"])
             df_['Date'] = pd.to_datetime(df_["Date"])
-            df_.sort_values(by="Date", inplace=True)
             self.df =  self.df.append(df_)
+            self.df = self.df.sort_values(by="Date")
 
 
     def generate_features(self):
